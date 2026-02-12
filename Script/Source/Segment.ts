@@ -5,6 +5,7 @@ namespace Script {
   export class Segment extends ƒ.ComponentScript {
     // Register the script as component for use in the editor via drag&drop
     public static readonly iSubclass: number = ƒ.Component.registerSubclass(Segment);
+    protected iSegment: number = 0;
 
 
     constructor() {
@@ -35,24 +36,27 @@ namespace Script {
       }
     }
 
-    public async grow(_nSegments: number, _graph: ƒ.Graph): Promise<void> {
-          let next: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(_graph);
-          // console.log(next);
+    public async grow(_nSegments: number, _graph: ƒ.Graph, _iSegment: number = 0): Promise<void> {
+      this.iSegment = _iSegment;
 
-          this.node.getChildByName("Cap").addChild(next);
-          next.mtxLocal.scale(ƒ.Vector3.ONE(1));
-          next.mtxLocal.rotateZ(0);
-          _nSegments--;
-          if (_nSegments < 1)
-            return;
-          next.getComponent(Segment).grow(_nSegments, _graph);
+      if (_nSegments < 1)
+        return;
+
+      let next: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(_graph);
+      this.node.getChildByName("Cap").addChild(next);
+      next.mtxLocal.scale(ƒ.Vector3.ONE(1));
+      next.mtxLocal.rotateZ(0);
+
+      next.getComponent(Segment).grow(--_nSegments, _graph, ++_iSegment);
     }
 
-    public twist(_rotZ: number): void {
-      this.node.mtxLocal.rotation = ƒ.Vector3.Z(_rotZ);
+    public twist(_rotZ: number, _startSegment: number = 0): void {
+      if (this.iSegment >= _startSegment)
+        this.node.mtxLocal.rotation = ƒ.Vector3.Z(_rotZ);
+
       let next: ƒ.Node = this.node.getChildByName("Cap").getChild(0);
       if (next)
-        next.getComponent(Segment).twist(_rotZ);
+        next.getComponent(Segment).twist(_rotZ, _startSegment);
     }
 
 

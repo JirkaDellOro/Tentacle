@@ -6,8 +6,7 @@ var Script;
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
     let tentacle;
-    let rotCurrent = 0;
-    let rotTarget = 0;
+    const twists = [{ current: 0, target: 0 }, { current: 0, target: 0 }, { current: 0, target: 0 }];
     async function start(_event) {
         viewport = _event.detail;
         let segment = await ƒ.Project.getResourcesByName("Segment")[0];
@@ -19,11 +18,15 @@ var Script;
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        let rot = (rotTarget - rotCurrent) / 10;
-        rotCurrent += rot;
-        if (Math.abs(rotTarget - rotCurrent) < 1)
-            rotTarget = ƒ.random.getRange(-40, 40);
-        tentacle.getComponent(Script.Segment).twist(rotCurrent);
+        for (let twist of twists) {
+            let rot = (twist.target - twist.current) / 20;
+            twist.current += rot;
+            if (Math.abs(twist.target - twist.current) < 1)
+                twist.target = ƒ.random.getRange(-40, 40);
+        }
+        tentacle.getComponent(Script.Segment).twist(twists[1].current, 0);
+        tentacle.getComponent(Script.Segment).twist(twists[2].current, 6);
+        tentacle.mtxLocal.rotation = ƒ.Vector3.Z(twists[0].current + 270);
         viewport.draw();
         ƒ.AudioManager.default.update();
     }
@@ -37,6 +40,7 @@ var Script;
         static { this.iSubclass = ƒ.Component.registerSubclass(Segment); }
         constructor() {
             super();
+            this.iSegment = 0;
             // Activate the functions of this component as response to events
             this.hndEvent = (_event) => {
                 switch (_event.type) {
@@ -59,22 +63,22 @@ var Script;
             this.addEventListener("componentRemove" /* ƒ.EVENT.COMPONENT_REMOVE */, this.hndEvent);
             this.addEventListener("nodeDeserialized" /* ƒ.EVENT.NODE_DESERIALIZED */, this.hndEvent);
         }
-        async grow(_nSegments, _graph) {
+        async grow(_nSegments, _graph, _iSegment = 0) {
+            this.iSegment = _iSegment;
+            if (_nSegments < 1)
+                return;
             let next = await ƒ.Project.createGraphInstance(_graph);
-            // console.log(next);
             this.node.getChildByName("Cap").addChild(next);
             next.mtxLocal.scale(ƒ.Vector3.ONE(1));
             next.mtxLocal.rotateZ(0);
-            _nSegments--;
-            if (_nSegments < 1)
-                return;
-            next.getComponent(Segment).grow(_nSegments, _graph);
+            next.getComponent(Segment).grow(--_nSegments, _graph, ++_iSegment);
         }
-        twist(_rotZ) {
-            this.node.mtxLocal.rotation = ƒ.Vector3.Z(_rotZ);
+        twist(_rotZ, _startSegment = 0) {
+            if (this.iSegment >= _startSegment)
+                this.node.mtxLocal.rotation = ƒ.Vector3.Z(_rotZ);
             let next = this.node.getChildByName("Cap").getChild(0);
             if (next)
-                next.getComponent(Segment).twist(_rotZ);
+                next.getComponent(Segment).twist(_rotZ, _startSegment);
         }
     }
     Script.Segment = Segment;
