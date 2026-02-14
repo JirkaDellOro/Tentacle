@@ -39,12 +39,12 @@ namespace Script {
           return
 
         twists[3 - _event.buttons].target =
-          Math.max(-40, Math.min(40, twists[3 - _event.buttons].target - _event.movementX));
+          Math.max(-50, Math.min(50, twists[3 - _event.buttons].target - _event.movementX));
 
         break;
       case "wheel":
         let movePartition = - Math.sign((<WheelEvent>_event).deltaY);
-        partition = Math.max(1, Math.min(segments - 1, partition + movePartition));
+        partition = Math.max(1, Math.min(segments + 1, partition + movePartition));
         break;
     }
   }
