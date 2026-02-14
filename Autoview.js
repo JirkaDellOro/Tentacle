@@ -50,23 +50,23 @@ async function startInteractiveViewport(_graphId)/* : void */ {
   let canvas/* : HTMLCanvasElement */ = document.querySelector("canvas");
   let viewport/* : ƒ.Viewport */ = new ƒ.Viewport();
   viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-  ƒ.Debug.log("Viewport:", viewport);  
+  ƒ.Debug.log("Viewport:", viewport);
   // make the camera interactive (complex method in FudgeAid)
-  let cameraOrbit/* : ƒ.Node */ = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+  // let cameraOrbit/* : ƒ.Node */ = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
 
   // hide the cursor when interacting, also suppressing right-click menu
   canvas.addEventListener("mousedown", canvas.requestPointerLock);
   canvas.addEventListener("mouseup", function () { document.exitPointerLock(); });
 
   // setup audio
-  let cmpListener/* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
-  cmpCamera.node.addComponent(cmpListener);
-  ƒ.AudioManager.default.listenWith(cmpListener);
-  ƒ.AudioManager.default.listenTo(graph);
-  ƒ.Debug.log("Audio:", ƒ.AudioManager.default);
+  // let cmpListener/* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
+  // cmpCamera.node.addComponent(cmpListener);
+  // ƒ.AudioManager.default.listenWith(cmpListener);
+  // ƒ.AudioManager.default.listenTo(graph);
+  // ƒ.Debug.log("Audio:", ƒ.AudioManager.default);
 
   // draw viewport once for immediate feedback
-  ƒ.Render.prepare(cameraOrbit);
+  ƒ.Render.prepare(graph);
   viewport.draw();
 
   // dispatch event to signal startup done
