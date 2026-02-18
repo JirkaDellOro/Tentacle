@@ -20,47 +20,43 @@ namespace Script {
     viewport.camera.mtxPivot.translateY(3);
     viewport.camera.mtxPivot.rotateY(180);
 
-    viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     let phySegment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Physegment")[0];
 
     let prev: ƒ.GraphInstance;
-    let yOffset: number = 1/0.9;
+    let scale: number = 1;
+    let anchorLength: number = 1;
     let yPos: number = 5;
-    for (let i: number = 0; i < 10; i++) {
+    for (let i: number = 0; i < 16; i++) {
       let segment: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(phySegment);
       let body: ƒ.ComponentRigidbody = segment.getComponent(ƒ.ComponentRigidbody);
 
       segment.mtxLocal.translateX(-2);
       segment.mtxLocal.translateY(yPos);
-      segment.mtxLocal.scale(ƒ.Vector3.ONE(1 - 0.1 * i));
+      segment.mtxLocal.scale(ƒ.Vector3.ONE(scale));
       ƒ.Physics.adjustTransforms(segment);
 
       if (prev) {
         let joint: ƒ.JointRevolute = prev.getComponent(ƒ.JointRevolute);
         console.log(joint);
-        joint.anchor = ƒ.Vector3.Y(yOffset);
+        joint.anchor = ƒ.Vector3.Y(anchorLength);//*yOffset);
         joint.bodyAnchor = prev.getComponent(ƒ.ComponentRigidbody);
         joint.bodyTied = body;
       } else
         physTacle = segment;
+
       viewport.getBranch().addChild(segment);
 
-      yOffset *= 0.9;
-      yPos += yOffset;
+      yPos += scale;
+      scale *= 0.9;
+      anchorLength *= 0.9;
       prev = segment;
     }
-
-    // ƒ.Physics.simulate();  // if physics is included and used
-
-
-
 
     let segment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Segment")[0];
     tentacle = await ƒ.Project.createGraphInstance(segment);
     tentacle.getComponent(Segment).grow(16, segment);
     viewport.getBranch().addChild(tentacle);
-
-
 
     viewport.canvas.addEventListener("mousemove", hndMouse);
     viewport.canvas.addEventListener("wheel", hndMouse);
@@ -88,7 +84,10 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    physTacle.getComponent(ƒ.ComponentRigidbody).setVelocity(new ƒ.Vector3(0.01, 1.7, 0));
+    let body: ƒ.ComponentRigidbody = physTacle.getComponent(ƒ.ComponentRigidbody);
+    let diff: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(new ƒ.Vector3(-2,5,0), body.getPosition());
+    diff.x = ƒ.random.getRange(-0.01,0.01);
+    body.applyForce(diff.scale(500));
     ƒ.Physics.simulate();  // if physics is included and used
 
     for (let twist of twists) {
