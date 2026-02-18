@@ -7,7 +7,9 @@ namespace Script {
   let viewport: ƒ.Viewport;
   document.addEventListener("interactiveViewportStarted", <EventListener><unknown>start);
 
-  let tentacle: ƒ.GraphInstance
+  let tentacle: ƒ.GraphInstance;
+  let physTacle: ƒ.GraphInstance;
+
   const twists: Twist[] = [{ current: 0, target: 0 }, { current: 0, target: 0 }, { current: 0, target: 0 }];
   const segments: number = 15;
   let partition: number = 5;
@@ -18,11 +20,47 @@ namespace Script {
     viewport.camera.mtxPivot.translateY(3);
     viewport.camera.mtxPivot.rotateY(180);
 
-    let segment: ƒ.Graph = <ƒ.Graph>await ƒ.Project.getResourcesByName("Segment")[0];
+    viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    let phySegment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Physegment")[0];
+
+    let prev: ƒ.GraphInstance;
+    let yOffset: number = 1/0.9;
+    let yPos: number = 5;
+    for (let i: number = 0; i < 10; i++) {
+      let segment: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(phySegment);
+      let body: ƒ.ComponentRigidbody = segment.getComponent(ƒ.ComponentRigidbody);
+
+      segment.mtxLocal.translateX(-2);
+      segment.mtxLocal.translateY(yPos);
+      segment.mtxLocal.scale(ƒ.Vector3.ONE(1 - 0.1 * i));
+      ƒ.Physics.adjustTransforms(segment);
+
+      if (prev) {
+        let joint: ƒ.JointRevolute = prev.getComponent(ƒ.JointRevolute);
+        console.log(joint);
+        joint.anchor = ƒ.Vector3.Y(yOffset);
+        joint.bodyAnchor = prev.getComponent(ƒ.ComponentRigidbody);
+        joint.bodyTied = body;
+      } else
+        physTacle = segment;
+      viewport.getBranch().addChild(segment);
+
+      yOffset *= 0.9;
+      yPos += yOffset;
+      prev = segment;
+    }
+
+    // ƒ.Physics.simulate();  // if physics is included and used
+
+
+
+
+    let segment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Segment")[0];
     tentacle = await ƒ.Project.createGraphInstance(segment);
     tentacle.getComponent(Segment).grow(16, segment);
-
     viewport.getBranch().addChild(tentacle);
+
+
 
     viewport.canvas.addEventListener("mousemove", hndMouse);
     viewport.canvas.addEventListener("wheel", hndMouse);
@@ -50,7 +88,8 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    physTacle.getComponent(ƒ.ComponentRigidbody).setVelocity(new ƒ.Vector3(0.01, 1.7, 0));
+    ƒ.Physics.simulate();  // if physics is included and used
 
     for (let twist of twists) {
       let rot: number = (twist.target - twist.current) / 20;

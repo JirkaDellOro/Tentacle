@@ -6,6 +6,7 @@ var Script;
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
     let tentacle;
+    let physTacle;
     const twists = [{ current: 0, target: 0 }, { current: 0, target: 0 }, { current: 0, target: 0 }];
     const segments = 15;
     let partition = 5;
@@ -14,7 +15,34 @@ var Script;
         viewport.camera.mtxPivot.translateZ(15);
         viewport.camera.mtxPivot.translateY(3);
         viewport.camera.mtxPivot.rotateY(180);
-        let segment = await ƒ.Project.getResourcesByName("Segment")[0];
+        viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+        let phySegment = ƒ.Project.getResourcesByName("Physegment")[0];
+        let prev;
+        let yOffset = 1 / 0.9;
+        let yPos = 5;
+        for (let i = 0; i < 10; i++) {
+            let segment = await ƒ.Project.createGraphInstance(phySegment);
+            let body = segment.getComponent(ƒ.ComponentRigidbody);
+            segment.mtxLocal.translateX(-2);
+            segment.mtxLocal.translateY(yPos);
+            segment.mtxLocal.scale(ƒ.Vector3.ONE(1 - 0.1 * i));
+            ƒ.Physics.adjustTransforms(segment);
+            if (prev) {
+                let joint = prev.getComponent(ƒ.JointRevolute);
+                console.log(joint);
+                joint.anchor = ƒ.Vector3.Y(yOffset);
+                joint.bodyAnchor = prev.getComponent(ƒ.ComponentRigidbody);
+                joint.bodyTied = body;
+            }
+            else
+                physTacle = segment;
+            viewport.getBranch().addChild(segment);
+            yOffset *= 0.9;
+            yPos += yOffset;
+            prev = segment;
+        }
+        // ƒ.Physics.simulate();  // if physics is included and used
+        let segment = ƒ.Project.getResourcesByName("Segment")[0];
         tentacle = await ƒ.Project.createGraphInstance(segment);
         tentacle.getComponent(Script.Segment).grow(16, segment);
         viewport.getBranch().addChild(tentacle);
@@ -39,7 +67,8 @@ var Script;
         }
     }
     function update(_event) {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        physTacle.getComponent(ƒ.ComponentRigidbody).setVelocity(new ƒ.Vector3(0.01, 1.7, 0));
+        ƒ.Physics.simulate(); // if physics is included and used
         for (let twist of twists) {
             let rot = (twist.target - twist.current) / 20;
             twist.current += rot;

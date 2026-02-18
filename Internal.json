@@ -57,7 +57,8 @@
         "Segment": [
           {
             "Script.Segment": {
-              "active": true
+              "active": true,
+              "iSegment": 0
             }
           }
         ]
@@ -173,6 +174,197 @@
       "components": {},
       "children": [],
       "idResource": "Graph|2026-02-02T13:57:47.322Z|97471",
+      "type": "Graph"
+    }
+  },
+  "Graph|2026-02-15T08:37:43.430Z|50191": {
+    "ƒ.Graph": {
+      "name": "Physegment",
+      "active": true,
+      "components": {
+        "ComponentTransform": [
+          {
+            "ƒ.ComponentTransform": {
+              "local": {
+                "translation": "[0, 0, 0]",
+                "rotation": "[0, 0, 0]",
+                "scaling": "[1, 1, 1]"
+              },
+              "Component": {
+                "active": true
+              }
+            }
+          }
+        ],
+        "JointRevolute": [
+          {
+            "ƒ.JointRevolute": {
+              "motorTorque": 0,
+              "JointAxial": {
+                "springDamping": 0,
+                "springFrequency": 0,
+                "maxMotor": 60,
+                "minMotor": -60,
+                "motorSpeed": 0,
+                "axis": "[0, 0, 1]",
+                "Joint": {
+                  "nameChildToConnect": "",
+                  "internalCollision": false,
+                  "breakForce": 0,
+                  "breakTorque": 0,
+                  "anchor": "[0, 1, 0]",
+                  "Component": {
+                    "active": true
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "ComponentRigidbody": [
+          {
+            "ƒ.ComponentRigidbody": {
+              "initialization": "TO_PIVOT",
+              "friction": 0.2,
+              "restitution": 0.2,
+              "mass": 1,
+              "dampTranslation": 0.1,
+              "dampRotation": 0.1,
+              "effectGravity": 1,
+              "typeBody": "DYNAMIC",
+              "typeCollider": "CAPSULE",
+              "isTrigger": false,
+              "id": 0,
+              "pivot": {
+                "translation": "[0, 0.5, 0]",
+                "rotation": "[0, 0, 0]",
+                "scaling": "[1, 1, 1]"
+              },
+              "Component": {
+                "active": true
+              }
+            }
+          }
+        ]
+      },
+      "children": [
+        {
+          "ƒ.Node": {
+            "name": "Shaft",
+            "active": true,
+            "components": {
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2026-02-02T11:39:07.572Z|82896"
+                  }
+                }
+              ],
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshRotation|2026-02-02T11:36:05.983Z|61916",
+                    "pivot": {
+                      "translation": "[0, 0.5, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Cap",
+            "active": true,
+            "components": {
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2026-02-02T11:39:07.572Z|82896"
+                  }
+                }
+              ],
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshSphere|2026-02-02T11:37:43.974Z|13462",
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 1, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[0.9, 0.9, 0.9]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        }
+      ],
+      "idResource": "Graph|2026-02-15T08:37:43.430Z|50191",
+      "type": "Graph"
+    }
+  },
+  "Graph|2026-02-15T10:07:44.857Z|26582": {
+    "ƒ.Graph": {
+      "name": "Phystacle",
+      "active": true,
+      "components": {},
+      "children": [
+        {
+          "ƒ.GraphInstance": {
+            "deserializeFromSource": true,
+            "idSource": "Graph|2026-02-15T08:37:43.430Z|50191"
+          }
+        }
+      ],
+      "idResource": "Graph|2026-02-15T10:07:44.857Z|26582",
       "type": "Graph"
     }
   }
