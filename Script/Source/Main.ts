@@ -9,6 +9,7 @@ namespace Script {
 
   let tentacle: ƒ.GraphInstance;
   let physTacle: ƒ.GraphInstance;
+  let physTip: ƒ.GraphInstance;
 
   const twists: Twist[] = [{ current: 0, target: 0 }, { current: 0, target: 0 }, { current: 0, target: 0 }];
   const segments: number = 15;
@@ -20,12 +21,12 @@ namespace Script {
     viewport.camera.mtxPivot.translateY(3);
     viewport.camera.mtxPivot.rotateY(180);
 
-    // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     let phySegment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Physegment")[0];
 
     let prev: ƒ.GraphInstance;
     let scale: number = 1;
-    let anchorLength: number = 1;
+    let anchorLength: number = 1/0.9;
     let yPos: number = 5;
     for (let i: number = 0; i < 16; i++) {
       let segment: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(phySegment);
@@ -34,6 +35,8 @@ namespace Script {
       segment.mtxLocal.translateX(-2);
       segment.mtxLocal.translateY(yPos);
       segment.mtxLocal.scale(ƒ.Vector3.ONE(scale));
+      for (let child of segment.getChildren())
+        child.getComponent(ƒ.ComponentMaterial).activate(false);
       ƒ.Physics.adjustTransforms(segment);
 
       if (prev) {
@@ -42,8 +45,11 @@ namespace Script {
         joint.anchor = ƒ.Vector3.Y(anchorLength);//*yOffset);
         joint.bodyAnchor = prev.getComponent(ƒ.ComponentRigidbody);
         joint.bodyTied = body;
-      } else
+      } else {
         physTacle = segment;
+        body.typeBody = ƒ.BODY_TYPE.KINEMATIC;
+        // body.setPosition(new ƒ.Vector3(-2.1, yPos,0));
+      }
 
       viewport.getBranch().addChild(segment);
 
@@ -52,6 +58,9 @@ namespace Script {
       anchorLength *= 0.9;
       prev = segment;
     }
+    physTip = prev;
+
+
 
     let segment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Segment")[0];
     tentacle = await ƒ.Project.createGraphInstance(segment);
@@ -69,6 +78,9 @@ namespace Script {
     _event.preventDefault();
     switch (_event.type) {
       case "mousemove":
+        let force: ƒ.Vector3 = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
+        physTip.getComponent(ƒ.ComponentRigidbody).applyForce(force.scale(10));
+
         if (_event.buttons == 0)
           return
 
@@ -84,10 +96,10 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    let body: ƒ.ComponentRigidbody = physTacle.getComponent(ƒ.ComponentRigidbody);
-    let diff: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(new ƒ.Vector3(-2,5,0), body.getPosition());
-    diff.x = ƒ.random.getRange(-0.01,0.01);
-    body.applyForce(diff.scale(500));
+    // let body: ƒ.ComponentRigidbody = physTacle.getComponent(ƒ.ComponentRigidbody);
+    // let diff: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(new ƒ.Vector3(-2,8,0), body.getPosition());
+    // diff.x = ƒ.random.getRange(-0.01,0.01);
+    // body.applyForce(diff.scale(500));
     ƒ.Physics.simulate();  // if physics is included and used
 
     for (let twist of twists) {

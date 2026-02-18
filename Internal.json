@@ -203,12 +203,12 @@
               "JointAxial": {
                 "springDamping": 0,
                 "springFrequency": 0,
-                "maxMotor": 60,
-                "minMotor": -60,
+                "maxMotor": 50,
+                "minMotor": -50,
                 "motorSpeed": 0,
                 "axis": "[0, 0, 1]",
                 "Joint": {
-                  "nameChildToConnect": "",
+                  "nameChildToConnect": "Cap",
                   "internalCollision": false,
                   "breakForce": 0,
                   "breakTorque": 0,
