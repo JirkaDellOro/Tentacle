@@ -21,14 +21,14 @@ namespace Script {
     viewport.camera.mtxPivot.translateY(3);
     viewport.camera.mtxPivot.rotateY(180);
 
-    viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER; 
     let phySegment: ƒ.Graph = <ƒ.Graph>ƒ.Project.getResourcesByName("Physegment")[0];
 
     let prev: ƒ.GraphInstance;
     let scale: number = 1;
     let anchorLength: number = 1/0.9;
-    let yPos: number = 5;
-    for (let i: number = 0; i < 16; i++) {
+    let yPos: number = 0;
+    for (let i: number = 0; i < 17; i++) {
       let segment: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(phySegment);
       let body: ƒ.ComponentRigidbody = segment.getComponent(ƒ.ComponentRigidbody);
 
@@ -36,7 +36,7 @@ namespace Script {
       segment.mtxLocal.translateY(yPos);
       segment.mtxLocal.scale(ƒ.Vector3.ONE(scale));
       for (let child of segment.getChildren())
-        child.getComponent(ƒ.ComponentMaterial).activate(false);
+        child.getComponent(ƒ.ComponentMaterial).activate(true);
       ƒ.Physics.adjustTransforms(segment);
 
       if (prev) {
