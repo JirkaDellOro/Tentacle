@@ -19,6 +19,7 @@ namespace Script {
     viewport = _event.detail;
     viewport.camera.mtxPivot.translateZ(15);
     viewport.camera.mtxPivot.translateY(3);
+    viewport.camera.mtxPivot.translateX(-1);
     viewport.camera.mtxPivot.rotateY(180);
 
     // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER; 
@@ -26,7 +27,7 @@ namespace Script {
 
     let prev: ƒ.GraphInstance;
     let scale: number = 1;
-    let anchorLength: number = 1/0.9;
+    let anchorLength: number = 1 / 0.9;
     let yPos: number = 0;
     for (let i: number = 0; i < 17; i++) {
       let segment: ƒ.GraphInstance = await ƒ.Project.createGraphInstance(phySegment);
@@ -74,15 +75,22 @@ namespace Script {
     ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
+
   function hndMouse(_event: MouseEvent | WheelEvent): void {
-    _event.preventDefault();
     switch (_event.type) {
       case "mousemove":
-        let force: ƒ.Vector3 = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
-        physTip.getComponent(ƒ.ComponentRigidbody).applyForce(force.scale(10));
+        if (_event.ctrlKey) {
+          let ray: ƒ.Ray = viewport.getRayFromClient(new ƒ.Vector2(_event.clientX, _event.clientY));
+          let force: ƒ.Vector3 = ray.intersectPlane(ƒ.Vector3.ZERO(), ƒ.Vector3.Z());
+          force = force.subtract(physTip.mtxLocal.translation);
+          // let force: ƒ.Vector3 = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
+          let posForce: ƒ.Vector3 = ƒ.Vector3.Y().transform(physTip.mtxWorld);
+          physTip.getComponent(ƒ.ComponentRigidbody).applyForceAtPoint(force.scale(50), posForce);
+          return;
+        }
 
         if (_event.buttons == 0)
-          return
+          return;
 
         twists[3 - _event.buttons].target =
           Math.max(-50, Math.min(50, twists[3 - _event.buttons].target - _event.movementX));
@@ -96,10 +104,6 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    // let body: ƒ.ComponentRigidbody = physTacle.getComponent(ƒ.ComponentRigidbody);
-    // let diff: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(new ƒ.Vector3(-2,8,0), body.getPosition());
-    // diff.x = ƒ.random.getRange(-0.01,0.01);
-    // body.applyForce(diff.scale(500));
     ƒ.Physics.simulate();  // if physics is included and used
 
     for (let twist of twists) {

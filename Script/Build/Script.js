@@ -15,6 +15,7 @@ var Script;
         viewport = _event.detail;
         viewport.camera.mtxPivot.translateZ(15);
         viewport.camera.mtxPivot.translateY(3);
+        viewport.camera.mtxPivot.translateX(-1);
         viewport.camera.mtxPivot.rotateY(180);
         // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER; 
         let phySegment = ƒ.Project.getResourcesByName("Physegment")[0];
@@ -60,11 +61,17 @@ var Script;
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
     function hndMouse(_event) {
-        _event.preventDefault();
         switch (_event.type) {
             case "mousemove":
-                let force = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
-                physTip.getComponent(ƒ.ComponentRigidbody).applyForce(force.scale(10));
+                if (_event.ctrlKey) {
+                    let ray = viewport.getRayFromClient(new ƒ.Vector2(_event.clientX, _event.clientY));
+                    let force = ray.intersectPlane(ƒ.Vector3.ZERO(), ƒ.Vector3.Z());
+                    force = force.subtract(physTip.mtxLocal.translation);
+                    // let force: ƒ.Vector3 = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
+                    let posForce = ƒ.Vector3.Y().transform(physTip.mtxWorld);
+                    physTip.getComponent(ƒ.ComponentRigidbody).applyForceAtPoint(force.scale(50), posForce);
+                    return;
+                }
                 if (_event.buttons == 0)
                     return;
                 twists[3 - _event.buttons].target =
@@ -77,10 +84,6 @@ var Script;
         }
     }
     function update(_event) {
-        // let body: ƒ.ComponentRigidbody = physTacle.getComponent(ƒ.ComponentRigidbody);
-        // let diff: ƒ.Vector3 = ƒ.Vector3.DIFFERENCE(new ƒ.Vector3(-2,8,0), body.getPosition());
-        // diff.x = ƒ.random.getRange(-0.01,0.01);
-        // body.applyForce(diff.scale(500));
         ƒ.Physics.simulate(); // if physics is included and used
         for (let twist of twists) {
             let rot = (twist.target - twist.current) / 20;
