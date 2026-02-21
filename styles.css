@@ -9,6 +9,9 @@ html, body {
 dialog { 
   text-align: center; 
 }
+dialog ul { 
+  text-align: left; 
+}
 
 canvas.fullscreen { 
   width: 100vw; 

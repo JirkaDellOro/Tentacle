@@ -1,39 +1,49 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-<title>Tentacle</title>
-<meta charset="utf-8" />
-<link rel="stylesheet" href="styles.css" />
+  <title>Tentacle</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
 
-<!--Editor settings of this project-->
-<meta type="settings" autoview="Graph|2026-02-02T13:57:47.322Z|97471" project="{'name':'Tentacle','graphAutoView':'Graph|2026-02-02T13:57:47.322Z|97471'}" />
+  <!--Editor settings of this project-->
+  <meta type="settings" autoview="Graph|2026-02-02T13:57:47.322Z|97471"
+    project="{'name':'Tentacle','graphAutoView':'Graph|2026-02-02T13:57:47.322Z|97471'}" />
 
-<!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
-<script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/OimoPhysics.js"></script>
+  <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
+  <script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/OimoPhysics.js"></script>
 
-<!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
-<script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/FudgeCore.js"></script>
-<script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/FudgeAid.js"></script>
+  <!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
+  <script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/FudgeCore.js"></script>
+  <script type="text/javascript" src="https://hs-furtwangen.github.io/FUDGE/Distribution/FudgeAid.js"></script>
 
-<!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
-<link type="resources" src="Internal.json" />
+  <!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
+  <link type="resources" src="Internal.json" />
 
-<!--Load custom scripts-->
-<script type="text/javascript" src="Script/Build/Script.js" editor="true"></script>
+  <!--Load custom scripts-->
+  <script type="text/javascript" src="Script/Build/Script.js" editor="true"></script>
 
-<!--Load Autoview script-->
-<script type="text/javascript" src="Autoview.js"></script>
+  <!--Load Autoview script-->
+  <script type="text/javascript" src="Autoview.js"></script>
 
 </head>
+
 <body>
-<!--Dialog shown at startup only-->
-<dialog>
-<p>FUDGE Autoview</p>
-<h1>Title (will be replaced by Autoview)</h1>
-<p>click to start</p>
-</dialog>
-<!--Canvas for FUDGE to render to-->
-<canvas class="fullscreen">
-</canvas>
+  <!--Dialog shown at startup only-->
+  <dialog>
+    <p>FUDGE Autoview</p>
+    <h1>Title (will be replaced by Autoview)</h1>
+    <p>
+      Two algorithms to control a tentacle with mouse and keyboard.
+    <ul>
+      <li>Left<br>Inverse kinematic: hold ctrl and move mouse to use physics to pull the tip.</li>
+      <li>Right<br>Forward kinematic: hold left mouse button to control upper, right for lower part.<br>Use wheel to move partition.</li>
+    </ul>
+    </p>
+  </dialog>
+  <!--Canvas for FUDGE to render to-->
+  <canvas class="fullscreen">
+  </canvas>
 </body>
+
 </html>

@@ -2,12 +2,10 @@
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
-    ƒ.Debug.info("Main Program Template running!");
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
-    let tentacle;
-    let physTacle;
-    let physTip;
+    let inverseTip;
+    let forwardBase;
     const twists = [{ current: 0, target: 0 }, { current: 0, target: 0 }, { current: 0, target: 0 }];
     const segments = 15;
     let partition = 5;
@@ -17,7 +15,7 @@ var Script;
         viewport.camera.mtxPivot.translateY(3);
         viewport.camera.mtxPivot.translateX(-1);
         viewport.camera.mtxPivot.rotateY(180);
-        // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER; 
+        // setup inverse kinematic
         let phySegment = ƒ.Project.getResourcesByName("Physegment")[0];
         let prev;
         let scale = 1;
@@ -39,26 +37,25 @@ var Script;
                 joint.bodyAnchor = prev.getComponent(ƒ.ComponentRigidbody);
                 joint.bodyTied = body;
             }
-            else {
-                physTacle = segment;
+            else
                 body.typeBody = ƒ.BODY_TYPE.KINEMATIC;
-                // body.setPosition(new ƒ.Vector3(-2.1, yPos,0));
-            }
             viewport.getBranch().addChild(segment);
             yPos += scale;
             scale *= 0.9;
             anchorLength *= 0.9;
             prev = segment;
         }
-        physTip = prev;
+        inverseTip = prev;
+        // viewport.physicsDebugMode = ƒ.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER; 
+        // setup forward kinematic
         let segment = ƒ.Project.getResourcesByName("Segment")[0];
-        tentacle = await ƒ.Project.createGraphInstance(segment);
-        tentacle.getComponent(Script.Segment).grow(16, segment);
-        viewport.getBranch().addChild(tentacle);
+        forwardBase = await ƒ.Project.createGraphInstance(segment);
+        forwardBase.getComponent(Script.Segment).grow(16, segment);
+        viewport.getBranch().addChild(forwardBase);
         viewport.canvas.addEventListener("mousemove", hndMouse);
         viewport.canvas.addEventListener("wheel", hndMouse);
         ƒ.Loop.addEventListener("loopFrame" /* ƒ.EVENT.LOOP_FRAME */, update);
-        ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+        ƒ.Loop.start();
     }
     function hndMouse(_event) {
         switch (_event.type) {
@@ -66,10 +63,9 @@ var Script;
                 if (_event.ctrlKey) {
                     let ray = viewport.getRayFromClient(new ƒ.Vector2(_event.clientX, _event.clientY));
                     let force = ray.intersectPlane(ƒ.Vector3.ZERO(), ƒ.Vector3.Z());
-                    force = force.subtract(physTip.mtxLocal.translation);
-                    // let force: ƒ.Vector3 = new ƒ.Vector3(_event.movementX, -_event.movementY, 0);
-                    let posForce = ƒ.Vector3.Y().transform(physTip.mtxWorld);
-                    physTip.getComponent(ƒ.ComponentRigidbody).applyForceAtPoint(force.scale(50), posForce);
+                    force = force.subtract(inverseTip.mtxLocal.translation);
+                    let posForce = ƒ.Vector3.Y().transform(inverseTip.mtxWorld);
+                    inverseTip.getComponent(ƒ.ComponentRigidbody).applyForceAtPoint(force.scale(50), posForce);
                     return;
                 }
                 if (_event.buttons == 0)
@@ -84,18 +80,15 @@ var Script;
         }
     }
     function update(_event) {
-        ƒ.Physics.simulate(); // if physics is included and used
+        ƒ.Physics.simulate();
         for (let twist of twists) {
             let rot = (twist.target - twist.current) / 20;
             twist.current += rot;
-            // if (Math.abs(twist.target - twist.current) < 1)
-            //   twist.target = ƒ.random.getRange(-40, 40);
+            forwardBase.getComponent(Script.Segment).twist(twists[1].current, 0);
+            forwardBase.getComponent(Script.Segment).twist(twists[2].current, partition);
+            forwardBase.mtxLocal.rotation = ƒ.Vector3.Z(twists[0].current /*  + 270 */);
+            viewport.draw();
         }
-        tentacle.getComponent(Script.Segment).twist(twists[1].current, 0);
-        tentacle.getComponent(Script.Segment).twist(twists[2].current, partition);
-        tentacle.mtxLocal.rotation = ƒ.Vector3.Z(twists[0].current /*  + 270 */);
-        viewport.draw();
-        // ƒ.AudioManager.default.update();
     }
 })(Script || (Script = {}));
 var Script;
